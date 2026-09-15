@@ -59,9 +59,9 @@ In this chapter we introduce and formally present the problem. Next, we present 
 
 Figure 1 shows a diagram with the main components of end-to-end gesture interaction. Broadly speaking, the user enters a gesture that corresponds to the word they want. This gesture is internally encoded into a representation that must be decoded into a word. Between the encoding and decoding processes, we can imagine the insertion of noise, which models the many types of errors that can occur in the process, such as the possibility that the gesture does not include all the letters of the desired word. In the model we implement, this noise must be inserted artificially to represent the noise that could be observed in real interaction. In the figure, the decoded information is then delivered to the destination of the input process. Next, we present a more formal definition of the problem.
 
-Let $`\Sigma`$ be the set of characters allowed in the words of a vocabulary $`L`$, where each word $`w = \{ c_1, c_2, c_3, ..., c_n : c_i \in \Sigma \}`$ is an ordered sequence of characters. We define the encoding process $`E`$ as a function that maps every $`w`$ in $`L`$ to a gesture $`G`$. We represent the gesture $`G`$ as a matrix in $`\mathbb{R}^{ 2 \times T }`$, where $`G_{1, t}`$ is the $`x`$ coordinate of the cursor at time $`t`$ and, analogously, $`G_{2, t}`$ is the $`y`$ coordinate at time $`t`$, with $`t \in \mathbb{N}`$ and $`T`$ the duration of the gesture[^1]. We denote by $`g_t`$ the cursor position vector at time $`t`$, or equivalently the column $`t`$ of $`G`$.
+Let $`\Sigma`$ be the set of characters allowed in the words of a vocabulary $`L`$, where each word $`w = \{ c_1, c_2, c_3, ..., c_n : c_i \in \Sigma \}`$ is an ordered sequence of characters. We define the encoding process $`E`$ as a function that maps every $`w`$ in $`L`$ to a gesture $`G`$. We represent the gesture $`G`$ as a matrix in $`ℝ^{ 2 \times T }`$, where $`G_{1, t}`$ is the $`x`$ coordinate of the cursor at time $`t`$ and, analogously, $`G_{2, t}`$ is the $`y`$ coordinate at time $`t`$, with $`t \in ℕ`$ and $`T`$ the duration of the gesture[^1]. We denote by $`g_t`$ the cursor position vector at time $`t`$, or equivalently the column $`t`$ of $`G`$.
 
-Thus, a decoder for the gesture typing problem is an estimator $`D`$ for the function $`\hat{w} = \operatorname*{arg\,max}_w P(w \mid G)`$, the inverse function of $`E`$, where $`\hat{w}`$ is the most likely word, $`G`$ the gesture entered by the user and $`w`$ the word the user intended to type.
+Thus, a decoder for the gesture typing problem is an estimator $`D`$ for the function $`\hat{w} = \arg\max_w P(w \mid G)`$, the inverse function of $`E`$, where $`\hat{w}`$ is the most likely word, $`G`$ the gesture entered by the user and $`w`$ the word the user intended to type.
 
 <p align="center"><img src="figures/information_theory_generation.png" width="748"></p>
 
@@ -69,7 +69,7 @@ Thus, a decoder for the gesture typing problem is an estimator $`D`$ for the fun
 
 In this work, we study the gestures produced when the encoding process $`E`$ results in an observed trajectory $`G`$ that stems from the user’s intention of connecting the keys corresponding to the characters of the word $`w`$, in the order in which they occur. The gesture corresponding to the word `MARCO`, for example, is generated from an initial touch on the key corresponding to the character `M`, sliding the pressed finger to the key `A`, from there to the key `R`, then to the key `C`, and finally lifting the finger on the key `O`. In this work, we use a monospaced font to denote characters and/or symbols of an alphabet.
 
-In many cases, it is useful to give as input to the estimator $`D`$ a transformation of $`G`$, $`e : G \rightarrow \mathbb{R}^{d \times T}`$, where $`d`$ is the number of features used and $`T`$ the duration of the gesture. In this way, $`e`$ is a feature extractor for $`G`$. In this work, we implement a probabilistic feature extractor inspired by Quinn and Zhai (2018). This extractor is described in detail in Section 3.2.
+In many cases, it is useful to give as input to the estimator $`D`$ a transformation of $`G`$, $`e : G \rightarrow ℝ^{d \times T}`$, where $`d`$ is the number of features used and $`T`$ the duration of the gesture. In this way, $`e`$ is a feature extractor for $`G`$. In this work, we implement a probabilistic feature extractor inspired by Quinn and Zhai (2018). This extractor is described in detail in Section 3.2.
 
 ### 1.2 Objectives
 
@@ -182,7 +182,7 @@ Recurrent networks are a specific type of neural network introduced in the 1980s
 Neural methods estimate their target function through gradual adjustments of their parameters. These adjustments are made using a variant of gradient descent, the *backpropagation* algorithm. This parameter adjustment method was introduced by Rumelhart et al. (1986). In short, this method updates the weights of the neural network through a perturbation technique, represented by Equation 2.1:
 
 ``` math
-W \rightarrow W' = W - \eta \delta \frac{\partial{\sigma(C)}}{\partial{W}} X \tag{2.1}
+W \rightarrow W' = W - \eta \delta \frac{\partial{\sigma(C)}}{\partial{W}} X \qquad \text{(2.1)}
 ```
 
 where $`W`$ is the weight matrix of a layer related to the connections between the inputs $`X`$ of the layer and its constituent cells, $`\delta`$ is the vector of credits (or blame) related to these cells, indicating how responsible they are for the current error of the model, $`\eta`$ is the learning rate and $`C`$ is the cost function, or error function, modified by an activation function $`\sigma`$. The learning rate establishes how large a step the algorithm takes during the iterations performed to find the minimum of the error surface described by $`\sigma(C)`$. In turn, the activation function $`\sigma`$ introduces a nonlinear transformation of $`C`$. Due to their unrolling in time, recurrent networks usually suffer from the vanishing/exploding gradient problem (Pascanu et al. 2012), which makes their training extremely complex.
@@ -193,7 +193,7 @@ This happens when the matrix $`W`$ is updated many times in the same propagation
 
 **Figure 9:** Diagram of an LSTM cell
 
-Formally, for each input $`x \in \mathbb{R}^{d \times T}`$, the LSTM cell computes the following function:
+Formally, for each input $`x \in ℝ^{d \times T}`$, the LSTM cell computes the following function:
 ``` math
 \begin{aligned}&s_t = h_s(W_s(y_{t-1} + x_t)) \\
 &i_t = g_i(W_i(y_{t-1} + x_t + c_{t-1})) \\
@@ -219,15 +219,15 @@ The CTC cost function solves this problem by introducing a new output class for 
 
 In this way, the probability of a word $`w`$ given a gesture $`G`$ is given by:
 ``` math
-P(w \mid G) = \sum_{A \in A_w} \prod_{t=1}^{T} p_t(c \mid G), \tag{2.8}
+P(w \mid G) = \sum_{A \in A_w} \prod_{t=1}^{T} p_t(c \mid G), \qquad \text{(2.8)}
 ```
 where $`A_w`$ is the set of valid alignments (Graves et al. 2006) of $`w`$ and $`p_t(c \mid G)`$ is the probability of a given character or of the blank symbol at time $`t`$, estimated by our recurrent network. As shown by Graves et al. (2006), the whole function is differentiable, so we can train a neural network to minimize $`-log(P(w \mid G))`$ using gradient descent.
 
 ### 2.5 Finite state transducers and *Beam Search*
 
-After training, at inference time the LSTM produces a matrix $`y \in \mathbb{R}^{|\Sigma^+| \times T}`$, where $`\Sigma^+`$ is $`\Sigma \cup \{\lambda\}`$ and $`T`$ is the length of the gesture. The value $`y_{i, j}`$ of the matrix is the probability that the element of $`\Sigma^+`$ with index $`i`$ corresponds to the input $`G`$ at time $`j`$. This matrix indicates the correlation between $`G`$ and $`\Sigma^+`$.
+After training, at inference time the LSTM produces a matrix $`y \in ℝ^{|\Sigma^+| \times T}`$, where $`\Sigma^+`$ is $`\Sigma \cup \{\lambda\}`$ and $`T`$ is the length of the gesture. The value $`y_{i, j}`$ of the matrix is the probability that the element of $`\Sigma^+`$ with index $`i`$ corresponds to the input $`G`$ at time $`j`$. This matrix indicates the correlation between $`G`$ and $`\Sigma^+`$.
 
-One way to decode the output of the network is to take $`\operatorname*{arg\,max}_i y_{i,j}`$ for every time $`j`$, concatenating the corresponding characters $`c_j`$ to form a word $`w`$. However, this method does not always give us words belonging to the vocabulary $`L`$ of valid words.
+One way to decode the output of the network is to take $`\arg\max_i y_{i,j}`$ for every time $`j`$, concatenating the corresponding characters $`c_j`$ to form a word $`w`$. However, this method does not always give us words belonging to the vocabulary $`L`$ of valid words.
 
 <p align="center"><img src="figures/Trie_example.png" width="276"></p>
 
@@ -269,7 +269,7 @@ The neural network we use is a bidirectional LSTM with a single cell, with $`W`$
 
 **Figure 11:** Diagram of the bidirectional model
 
-The output of the estimator is, for each time $`g_t`$, the probability that an element of $`\Sigma^+`$ corresponds to the correct decoding of $`G`$ at time $`t`$. These probabilities are computed using the *softmax* function on the output of the network for each $`t`$. The final result is a matrix $`y \in \mathbb{R}^{|\Sigma^+| \times T}`$, where $`T`$ is the length of the gesture. This matrix corresponds to the network’s decoding of the gesture $`G`$, independent of a language model.
+The output of the estimator is, for each time $`g_t`$, the probability that an element of $`\Sigma^+`$ corresponds to the correct decoding of $`G`$ at time $`t`$. These probabilities are computed using the *softmax* function on the output of the network for each $`t`$. The final result is a matrix $`y \in ℝ^{|\Sigma^+| \times T}`$, where $`T`$ is the length of the gesture. This matrix corresponds to the network’s decoding of the gesture $`G`$, independent of a language model.
 
 We apply the matrix $`y`$ as the transition probabilities (edges) of an FST built from a Trie of the dictionary. This FST is used by the *Beam Search* algorithm to emit the sequences with the highest accumulated probability mass found in a search of width $`k`$. In our work, $`k = 3`$. Figure 12 presents the end-to-end decoding as a diagram.
 
@@ -283,16 +283,16 @@ As shown in Quinn and Zhai (2018), the typing process has a structural error, mo
 
 Therefore, it is only natural that, when feeding the LSTM estimator during training and inference, we use not the discrete information of which key is hit at time $`t`$ (a *one-hot vector*) in a gesture $`G`$, as in Alsharif et al. (2015), but rather the probability of each key being the one the user wanted to hit at time $`t`$.
 
-Assuming that the probability of each key being the intended key is independent of the probability of the other keys being the intended key, we define the input of the network at training and inference time as the matrix $`X \in \mathbb{R}^{|\omega| \times T}`$, where each element is
+Assuming that the probability of each key being the intended key is independent of the probability of the other keys being the intended key, we define the input of the network at training and inference time as the matrix $`X \in ℝ^{|\omega| \times T}`$, where each element is
 ``` math
-X_{i, t} = P(\omega_i \mid g_t), \tag{3.1}
+X_{i, t} = P(\omega_i \mid g_t), \qquad \text{(3.1)}
 ```
 where $`\omega_i`$ is a key of the virtual keyboard, $`\omega`$ the set of possible keys and $`g_t`$ the coordinates of the user’s finger or pointing device at time $`t`$, as described in Section 1.1. In our work, $`|\omega|`$ is **26**.
 
 Quinn and Zhai (2018) observed that the data follow a normal distribution centered at the midpoint of the key, $`m(\omega_i)`$. Therefore, we model the probability of each key being the key intended by the user at time $`t`$ as inversely proportional to the distance between $`g_t`$ and $`m(\omega_i)`$, and we can compute it as
 
 ``` math
-P(\omega_i \mid g_t) = \frac{1}{e^{\left\lVert m(\omega_i) - g_t\right\rVert \delta}}, \tag{3.2}
+P(\omega_i \mid g_t) = \frac{1}{e^{\left\lVert m(\omega_i) - g_t\right\rVert \delta}}, \qquad \text{(3.2)}
 ```
 where $`\delta`$ is the structural error coefficient.
 
@@ -314,10 +314,10 @@ This section describes a model and an algorithm for synthesizing human gestures 
 
 Let $`\Sigma`$ be the set of characters allowed in the words of a vocabulary $`L`$, and each word $`w = \{ c_1, c_2, c_3, ..., c_n : c_i \in \Sigma \}`$ an ordered sequence of characters. Assuming that $`w`$ is any word in $`L`$ that the user wants to type – such as `MARCO` – for each symbol $`c`$ in $`w`$ there is a key $`\omega_c`$ corresponding to it on the virtual keyboard. `Ã`, `Á` and `A` all have $`\omega_c`$ = $`\omega_\texttt{A}`$, for example. The mapping $`\omega`$ is generally given by the implementation of the virtual keyboard.
 
-We define $`m : \Omega \rightarrow \mathbb{R}^2`$ as the function
+We define $`m : \Omega \rightarrow ℝ^2`$ as the function
 
 ``` math
-m(\omega_c) = \bigg[  \frac{x_2^{\omega_c} - x_1^{\omega_c}}{2} \ \frac{y_2^{\omega_c}- y_1^{\omega_c}}{2} \bigg], \tag{3.3}
+m(\omega_c) = \bigg[  \frac{x_2^{\omega_c} - x_1^{\omega_c}}{2} \ \frac{y_2^{\omega_c}- y_1^{\omega_c}}{2} \bigg], \qquad \text{(3.3)}
 ```
 where $`(x_1^{\omega_c}, y_1^{\omega_c}), (x_2^{\omega_c}, y_2^{\omega_c})`$ are the coordinates of the points corresponding to the corners of a key $`\omega`$ that represents the character $`c`$, and $`\Omega`$ is the set of keys available on the virtual keyboard.
 
@@ -336,7 +336,7 @@ However, as shown in Quinn and Zhai (2018), due to the motor and cognitive error
 Quinn and Zhai (2018) noticed in experimental data that real trajectories rarely followed the prototype in a straight line; instead, they showed small curvatures along the trajectory. The authors observed that the curvature followed a normal distribution, given by $`\theta \sim \mathcal{N}(0, {s_2}^{2})`$, where $`s_2`$ is the standard deviation of the trajectory curvature, with $`s_2 = 11.59^{\circ}`$. We therefore define $`Z = [ \mathbf{o}_1, \mathbf{v}_1, \mathbf{o}_2, \mathbf{v}_2 , \mathbf{o}_3, \mathbf{v}_3, ..., \mathbf{v}_{n-1}, \mathbf{o}_n ]^T`$, where
 
 ``` math
-\mathbf{v}_i = \frac{(\mathbf{o}_{i+1} - \mathbf{o}_{i})}{2} R(\theta) + \mathbf{o}_{i} \tag{3.4}
+\mathbf{v}_i = \frac{(\mathbf{o}_{i+1} - \mathbf{o}_{i})}{2} R(\theta) + \mathbf{o}_{i} \qquad \text{(3.4)}
 ```
 
 The matrix $`Z`$ represents the points of $`O`$ interleaved with the points of the matrix $`V`$. In turn, $`V`$ denotes the midpoint between any two consecutive points of $`O`$, perturbed by an angle $`\theta`$ after multiplication by a rotation matrix $`R(\theta)`$. The matrix $`V`$ represents the connecting points (*via-points*), which were found in the work of Quinn and Zhai (2018) to be the best anchors for recovering the original gesture, taking the curvature of the trajectory into account.
@@ -352,7 +352,7 @@ The two-thirds power law (Viviani and Cenzato 1985) reflects the relationship be
 Based on the studies of the aforementioned authors, we define the sub-trajectory $`G_i`$ as the stroke that connects $`\mathbf{o}_i`$ to $`\mathbf{o}_{i + 1}`$ passing through $`\mathbf{v}_{i}`$ and that minimizes
 
 ``` math
-C = \frac{1}{2} \int_{t_0}^{t_f} \bigg[ \bigg(\frac{d^3x}{dt^3}\bigg)^2 + \bigg(\frac{d^3y}{dt^3}\bigg)^2 \bigg] dx, \tag{3.5}
+C = \frac{1}{2} \int_{t_0}^{t_f} \bigg[ \bigg(\frac{d^3x}{dt^3}\bigg)^2 + \bigg(\frac{d^3y}{dt^3}\bigg)^2 \bigg] dx, \qquad \text{(3.5)}
 ```
 the cost function of the stroke $`G_i`$. This function represents the rate of change of acceleration (*jerk*) of the trajectory $`G_i`$ from $`t=t_0`$ to $`t=t_f`$. Consequently, minimizing $`C`$ maximizes the smoothness of the generated stroke.
 
