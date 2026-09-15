@@ -2,6 +2,8 @@
 
 *Redes LSTM com custo CTC aplicadas à decodificação de digitação por gestos*
 
+**📖 [Read the thesis online (English)](Undergraduate%20Thesis%20Text%20(English).md)**, or use the PDFs below.
+
 Undergraduate thesis (B.Sc. in Software Engineering), Institute of Computing, Federal University of Amazonas (UFAM), Brazil. Approved on June 21, 2018.
 
 - **Author:** Willians Cassiano de Freitas Abreu
