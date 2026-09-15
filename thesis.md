@@ -279,7 +279,7 @@ We apply the matrix $`y`$ as the transition probabilities (edges) of an FST buil
 
 ### 3.2 Feature extractor
 
-As shown in Quinn and Zhai (2018), the typing process has a structural error, modeled in Section 3.3 by $`s_1`$. Thus, the noise source (motor, bioelectrical or cognitive) causes the values observed when the user intends to hit a given key to follow a distribution $`\mathcal{N}(m(\omega_i), s_1)`$, where $`m(\omega_i)`$ is the midpoint of the key the user wanted to hit.
+As shown in Quinn and Zhai (2018), the typing process has a structural error, modeled in Section 3.3 by $`s_1`$. Thus, the noise source (motor, bioelectrical or cognitive) causes the values observed when the user intends to hit a given key to follow a distribution $`𝒩(m(\omega_i), s_1)`$, where $`m(\omega_i)`$ is the midpoint of the key the user wanted to hit.
 
 Therefore, it is only natural that, when feeding the LSTM estimator during training and inference, we use not the discrete information of which key is hit at time $`t`$ (a *one-hot vector*) in a gesture $`G`$, as in Alsharif et al. (2015), but rather the probability of each key being the one the user wanted to hit at time $`t`$.
 
@@ -312,7 +312,7 @@ To train our estimator model, we need a massive amount of data. Therefore, consi
 
 This section describes a model and an algorithm for synthesizing human gestures based on the work of Quinn and Zhai (2018). This model covers only the observable variables of an observed trajectory $`G`$ (*end-effector*), and does not aim to model the whole latent biomechanical and bioelectrical process that generates the movement. The authors obtained the synthesis model from a segmentation algorithm that derives parameters for the encoding process $`E(w)`$ described below.
 
-Let $`\Sigma`$ be the set of characters allowed in the words of a vocabulary $`L`$, and each word $`w = \{ c_1, c_2, c_3, ..., c_n : c_i \in \Sigma \}`$ an ordered sequence of characters. Assuming that $`w`$ is any word in $`L`$ that the user wants to type – such as `MARCO` – for each symbol $`c`$ in $`w`$ there is a key $`\omega_c`$ corresponding to it on the virtual keyboard. `Ã`, `Á` and `A` all have $`\omega_c`$ = $`\omega_\texttt{A}`$, for example. The mapping $`\omega`$ is generally given by the implementation of the virtual keyboard.
+Let $`\Sigma`$ be the set of characters allowed in the words of a vocabulary $`L`$, and each word $`w = \{ c_1, c_2, c_3, ..., c_n : c_i \in \Sigma \}`$ an ordered sequence of characters. Assuming that $`w`$ is any word in $`L`$ that the user wants to type – such as `MARCO` – for each symbol $`c`$ in $`w`$ there is a key $`\omega_c`$ corresponding to it on the virtual keyboard. `Ã`, `Á` and `A` all have $`\omega_c`$ = $`\omega_𝙰`$, for example. The mapping $`\omega`$ is generally given by the implementation of the virtual keyboard.
 
 We define $`m : \Omega \rightarrow ℝ^2`$ as the function
 
@@ -321,22 +321,22 @@ m(\omega_c) = \bigg[  \frac{x_2^{\omega_c} - x_1^{\omega_c}}{2} \ \frac{y_2^{\om
 ```
 where $`(x_1^{\omega_c}, y_1^{\omega_c}), (x_2^{\omega_c}, y_2^{\omega_c})`$ are the coordinates of the points corresponding to the corners of a key $`\omega`$ that represents the character $`c`$, and $`\Omega`$ is the set of keys available on the virtual keyboard.
 
-Let $`K`$ be the real matrix representing the coordinates of the centroids of each key that must be pressed to enter $`w`$ on a conventional keyboard. Therefore, $`K = [ \mathbf{k}_1, \mathbf{k}_2, \mathbf{k}_3, ..., \mathbf{k}_n]^T`$ and $`\mathbf{k}_i = m(\omega_{c_i})`$. We also assume, as described in 1.1, that the user’s intention is to connect the points indicated by $`K`$, in order. This matrix forms the prototype of the gesture, as shown in Figure 14.
+Let $`K`$ be the real matrix representing the coordinates of the centroids of each key that must be pressed to enter $`w`$ on a conventional keyboard. Therefore, $`K = [ 𝐤_1, 𝐤_2, 𝐤_3, ..., 𝐤_n]^T`$ and $`𝐤_i = m(\omega_{c_i})`$. We also assume, as described in 1.1, that the user’s intention is to connect the points indicated by $`K`$, in order. This matrix forms the prototype of the gesture, as shown in Figure 14.
 
 <p align="center"><img src="figures/targets_k.png" width="327"></p>
 
 **Figure 14:** Graphical representation of the matrix $`K`$ for the word `MARCO`
 
-However, as shown in Quinn and Zhai (2018), due to the motor and cognitive error of the encoding process, the user does not always hit the key centroids precisely. Thus, the values actually observed in experimental data follow a normal distribution, so that the observation matrix $`O`$ is a realization of a distribution $`\mathcal{N}(K, s_1)`$, where $`s_1`$ is the spread coefficient. Figure 15 shows the influence of $`s_1`$ on the dispersion of the samples of $`O`$ around $`K`$. In our synthesis experiments, we use $`s_1 = 10`$.
+However, as shown in Quinn and Zhai (2018), due to the motor and cognitive error of the encoding process, the user does not always hit the key centroids precisely. Thus, the values actually observed in experimental data follow a normal distribution, so that the observation matrix $`O`$ is a realization of a distribution $`𝒩(K, s_1)`$, where $`s_1`$ is the spread coefficient. Figure 15 shows the influence of $`s_1`$ on the dispersion of the samples of $`O`$ around $`K`$. In our synthesis experiments, we use $`s_1 = 10`$.
 
 <p align="center"><img src="figures/sigma_5.png" width="229"> <img src="figures/sigma_10.png" width="229"> <img src="figures/sigma_20.png" width="229"></p>
 
-**Figure 15:** Example realizations of $`O`$ for $`s_1 = \{5, 10, 20\}`$ from left to right, with $`K_i = m( \texttt{M})`$
+**Figure 15:** Example realizations of $`O`$ for $`s_1 = \{5, 10, 20\}`$ from left to right, with $`K_i = m( 𝙼)`$
 
-Quinn and Zhai (2018) noticed in experimental data that real trajectories rarely followed the prototype in a straight line; instead, they showed small curvatures along the trajectory. The authors observed that the curvature followed a normal distribution, given by $`\theta \sim \mathcal{N}(0, {s_2}^{2})`$, where $`s_2`$ is the standard deviation of the trajectory curvature, with $`s_2 = 11.59^{\circ}`$. We therefore define $`Z = [ \mathbf{o}_1, \mathbf{v}_1, \mathbf{o}_2, \mathbf{v}_2 , \mathbf{o}_3, \mathbf{v}_3, ..., \mathbf{v}_{n-1}, \mathbf{o}_n ]^T`$, where
+Quinn and Zhai (2018) noticed in experimental data that real trajectories rarely followed the prototype in a straight line; instead, they showed small curvatures along the trajectory. The authors observed that the curvature followed a normal distribution, given by $`\theta \sim 𝒩(0, {s_2}^{2})`$, where $`s_2`$ is the standard deviation of the trajectory curvature, with $`s_2 = 11.59^{\circ}`$. We therefore define $`Z = [ 𝐨_1, 𝐯_1, 𝐨_2, 𝐯_2 , 𝐨_3, 𝐯_3, ..., 𝐯_{n-1}, 𝐨_n ]^T`$, where
 
 ``` math
-\mathbf{v}_i = \frac{(\mathbf{o}_{i+1} - \mathbf{o}_{i})}{2} R(\theta) + \mathbf{o}_{i} \qquad \text{(3.4)}
+𝐯_i = \frac{(𝐨_{i+1} - 𝐨_{i})}{2} R(\theta) + 𝐨_{i} \qquad \text{(3.4)}
 ```
 
 The matrix $`Z`$ represents the points of $`O`$ interleaved with the points of the matrix $`V`$. In turn, $`V`$ denotes the midpoint between any two consecutive points of $`O`$, perturbed by an angle $`\theta`$ after multiplication by a rotation matrix $`R(\theta)`$. The matrix $`V`$ represents the connecting points (*via-points*), which were found in the work of Quinn and Zhai (2018) to be the best anchors for recovering the original gesture, taking the curvature of the trajectory into account.
@@ -349,7 +349,7 @@ According to Fitts (1954), the trajectory of human movement respects the princip
 
 The two-thirds power law (Viviani and Cenzato 1985) reflects the relationship between the tangential velocity of a movement and the radius of curvature at time $`t`$. It implies that equal angles are described in equal times, and that the velocity of a stroke evolves in inverse proportion to its curvature.
 
-Based on the studies of the aforementioned authors, we define the sub-trajectory $`G_i`$ as the stroke that connects $`\mathbf{o}_i`$ to $`\mathbf{o}_{i + 1}`$ passing through $`\mathbf{v}_{i}`$ and that minimizes
+Based on the studies of the aforementioned authors, we define the sub-trajectory $`G_i`$ as the stroke that connects $`𝐨_i`$ to $`𝐨_{i + 1}`$ passing through $`𝐯_{i}`$ and that minimizes
 
 ``` math
 C = \frac{1}{2} \int_{t_0}^{t_f} \bigg[ \bigg(\frac{d^3x}{dt^3}\bigg)^2 + \bigg(\frac{d^3y}{dt^3}\bigg)^2 \bigg] dx, \qquad \text{(3.5)}
@@ -372,11 +372,11 @@ Formally:
 
 2.  $`K\gets m(\omega_{c_i})`$ for $`c_i`$ in $`w`$
 
-3.  $`O\gets \mathcal{N}(K, s_1)`$
+3.  $`O\gets 𝒩(K, s_1)`$
 
-4.  $`\theta \gets \mathcal{N}(0, s_2)`$
+4.  $`\theta \gets 𝒩(0, s_2)`$
 
-5.  $`V \gets ((\mathbf{o}_{i+1} - \mathbf{o}_{i}) / 2) R(\theta) + \mathbf{o}_{i}`$ for $`i`$ from $`1`$ to $`|O| - 1`$
+5.  $`V \gets ((𝐨_{i+1} - 𝐨_{i}) / 2) R(\theta) + 𝐨_{i}`$ for $`i`$ from $`1`$ to $`|O| - 1`$
 
 6.  $`Z \gets interleave(O, V)`$
 
